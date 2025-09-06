@@ -70,6 +70,7 @@ public class Device {
 struct IosConfig {
   let categoryOptions: [AVAudioSession.CategoryOptions]
   let manageAudioSession: Bool
+  let enableBackgroundRecording: Bool
 
   init(map: [String: Any]) {
     let comps = map["categoryOptions"] as? String
@@ -96,5 +97,6 @@ struct IosConfig {
     }
     self.categoryOptions = options ?? []
     self.manageAudioSession = map["manageAudioSession"] as? Bool ?? true
+    self.enableBackgroundRecording = map["enableBackgroundRecording"] as? Bool ?? false
   }
 }

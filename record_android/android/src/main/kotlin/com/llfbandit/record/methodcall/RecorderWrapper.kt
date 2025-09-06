@@ -10,6 +10,7 @@ import com.llfbandit.record.record.recorder.IRecorder
 import com.llfbandit.record.record.recorder.MediaRecorder
 import com.llfbandit.record.record.stream.RecorderRecordStreamHandler
 import com.llfbandit.record.record.stream.RecorderStateStreamHandler
+import com.llfbandit.record.service.RecordingForegroundService
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -30,6 +31,7 @@ internal class RecorderWrapper(
     private val recorderRecordStreamHandler = RecorderRecordStreamHandler()
     private var recorder: IRecorder? = null
     private var bluetoothReceiver: BluetoothReceiver? = null
+    private var isBackgroundRecording = false
 
     init {
         eventChannel = EventChannel(messenger, EVENTS_STATE_CHANNEL + recorderId)
@@ -51,6 +53,11 @@ internal class RecorderWrapper(
 
     fun dispose() {
         try {
+            if (isBackgroundRecording) {
+                RecordingForegroundService.stopService(context)
+                isBackgroundRecording = false
+            }
+            
             recorder?.dispose()
         } catch (ignored: Exception) {
         } finally {
@@ -105,6 +112,11 @@ internal class RecorderWrapper(
 
     fun stop(result: MethodChannel.Result) {
         try {
+            if (isBackgroundRecording) {
+                RecordingForegroundService.stopService(context)
+                isBackgroundRecording = false
+            }
+            
             if (recorder == null) {
                 result.success(null)
             } else {
@@ -117,6 +129,11 @@ internal class RecorderWrapper(
 
     fun cancel(result: MethodChannel.Result) {
         try {
+            if (isBackgroundRecording) {
+                RecordingForegroundService.stopService(context)
+                isBackgroundRecording = false
+            }
+            
             recorder?.cancel()
             result.success(null)
         } catch (e: Exception) {
@@ -158,6 +175,16 @@ internal class RecorderWrapper(
     }
 
     private fun start(config: RecordConfig, result: MethodChannel.Result) {
+        if (config.enableBackgroundRecording) {
+            RecordingForegroundService.startService(
+                context,
+                config.notificationTitle,
+                config.notificationText,
+                config.notificationIcon
+            )
+            isBackgroundRecording = true
+        }
+        
         recorder!!.start(config)
         result.success(null)
     }

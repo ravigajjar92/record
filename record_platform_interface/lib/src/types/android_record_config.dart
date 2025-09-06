@@ -48,6 +48,32 @@ class AndroidRecordConfig {
   /// Defaults to [AudioManagerMode.modeNormal].
   final AudioManagerMode audioManagerMode;
 
+  /// Enable background recording using a foreground service.
+  /// When enabled, the recording will continue even when the app is minimized or killed.
+  /// 
+  /// This requires proper permissions and notification setup.
+  /// Defaults to [false].
+  final bool enableBackgroundRecording;
+
+  /// Title for the foreground service notification.
+  /// Only used when [enableBackgroundRecording] is true.
+  /// 
+  /// Defaults to "Recording audio".
+  final String notificationTitle;
+
+  /// Content text for the foreground service notification.
+  /// Only used when [enableBackgroundRecording] is true.
+  /// 
+  /// Defaults to "Audio recording is active".
+  final String notificationText;
+
+  /// Icon resource name for the foreground service notification.
+  /// Should be a drawable resource in your Android app.
+  /// Only used when [enableBackgroundRecording] is true.
+  /// 
+  /// If null, uses the default app icon.
+  final String? notificationIcon;
+
   const AndroidRecordConfig({
     this.useLegacy = false,
     this.muteAudio = false,
@@ -55,6 +81,10 @@ class AndroidRecordConfig {
     this.audioSource = AndroidAudioSource.defaultSource,
     this.speakerphone = false,
     this.audioManagerMode = AudioManagerMode.modeNormal,
+    this.enableBackgroundRecording = false,
+    this.notificationTitle = "Recording audio",
+    this.notificationText = "Audio recording is active",
+    this.notificationIcon,
   });
 
   /// Transforms model to JSON map.
@@ -66,6 +96,10 @@ class AndroidRecordConfig {
       'audioSource': audioSource.name,
       'speakerphone': speakerphone,
       'audioManagerMode': audioManagerMode.name,
+      'enableBackgroundRecording': enableBackgroundRecording,
+      'notificationTitle': notificationTitle,
+      'notificationText': notificationText,
+      'notificationIcon': notificationIcon,
     };
   }
 }

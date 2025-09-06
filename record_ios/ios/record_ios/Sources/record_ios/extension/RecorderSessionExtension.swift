@@ -9,7 +9,19 @@ extension AudioRecordingDelegate {
     let audioSession = AVAudioSession.sharedInstance()
 
     do {
-        try audioSession.setCategory(.playAndRecord, options: AVAudioSession.CategoryOptions(config.iosConfig?.categoryOptions ?? []))
+        let category: AVAudioSession.Category
+        let mode: AVAudioSession.Mode
+        
+        if config.iosConfig?.enableBackgroundRecording ?? false {
+            // Use record category for background recording
+            category = .record
+            mode = .default
+        } else {
+            category = .playAndRecord
+            mode = .default
+        }
+        
+        try audioSession.setCategory(category, mode: mode, options: AVAudioSession.CategoryOptions(config.iosConfig?.categoryOptions ?? []))
     } catch {
       throw RecorderError.error(message: "Failed to start recording", details: "setCategory: \(error.localizedDescription)")
     }

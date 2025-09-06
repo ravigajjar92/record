@@ -82,6 +82,75 @@ await record.cancel();
 record.dispose(); // As always, don't forget this one.
 ```
 
+## Background Recording
+
+The package supports background recording for Android and iOS:
+
+### Android Background Recording
+
+```dart
+import 'package:record/record.dart';
+
+final record = AudioRecorder();
+
+// Configure background recording for Android
+const config = RecordConfig(
+  androidConfig: AndroidRecordConfig(
+    enableBackgroundRecording: true,
+    notificationTitle: "Recording audio in background",
+    notificationText: "Tap to open app",
+    notificationIcon: "ic_microphone", // Optional: custom notification icon
+  ),
+);
+
+// Start background recording
+if (await record.hasPermission()) {
+  await record.start(config, path: 'aFullPath/myFile.m4a');
+  // Recording will continue even when app is minimized or killed
+}
+```
+
+**Required Android Setup:**
+1. Add permissions to `android/app/src/main/AndroidManifest.xml`:
+   ```xml
+   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+   ```
+
+### iOS Background Recording
+
+```dart
+import 'package:record/record.dart';
+
+final record = AudioRecorder();
+
+// Configure background recording for iOS
+const config = RecordConfig(
+  iosConfig: IosRecordConfig(
+    enableBackgroundRecording: true,
+    categoryOptions: [
+      IosAudioCategoryOption.allowBluetooth,
+      IosAudioCategoryOption.defaultToSpeaker,
+    ],
+  ),
+);
+
+// Start background recording
+if (await record.hasPermission()) {
+  await record.start(config, path: 'aFullPath/myFile.m4a');
+  // Recording will continue when app is minimized
+}
+```
+
+**Required iOS Setup:**
+1. Add background mode to `ios/Runner/Info.plist`:
+   ```xml
+   <key>UIBackgroundModes</key>
+   <array>
+     <string>audio</string>
+   </array>
+   ```
+
 ## Setup, permissions and others
 
 ### Android

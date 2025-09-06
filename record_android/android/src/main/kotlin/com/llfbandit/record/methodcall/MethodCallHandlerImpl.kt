@@ -184,7 +184,11 @@ class MethodCallHandlerImpl(
             Utils.firstNonNull(androidConfig?.get("manageBluetooth") as Boolean?, true),
             audioSource,
             Utils.firstNonNull(androidConfig?.get("speakerphone") as Boolean?, false),
-            audioManagerMode
+            audioManagerMode,
+            Utils.firstNonNull(androidConfig?.get("enableBackgroundRecording") as Boolean?, false),
+            Utils.firstNonNull(androidConfig?.get("notificationTitle") as String?, "Recording audio"),
+            Utils.firstNonNull(androidConfig?.get("notificationText") as String?, "Audio recording is active"),
+            androidConfig?.get("notificationIcon") as String?
         )
     }
 }

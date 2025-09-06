@@ -12,6 +12,13 @@ class IosRecordConfig {
   /// If `false`, there will be no check of the [RecordConfig] given.
   final bool manageAudioSession;
 
+  /// Enable background recording using background audio mode.
+  /// When enabled, the recording will continue even when the app is minimized.
+  /// 
+  /// This requires the 'audio' background mode to be declared in Info.plist.
+  /// Defaults to [false].
+  final bool enableBackgroundRecording;
+
   const IosRecordConfig({
     this.categoryOptions = const [
       IosAudioCategoryOption.defaultToSpeaker,
@@ -19,11 +26,13 @@ class IosRecordConfig {
       IosAudioCategoryOption.allowBluetoothA2DP,
     ],
     this.manageAudioSession = true,
+    this.enableBackgroundRecording = false,
   });
   Map<String, dynamic> toMap() {
     return {
       "categoryOptions": categoryOptions.map((e) => e.name).join(','),
       "manageAudioSession": manageAudioSession,
+      "enableBackgroundRecording": enableBackgroundRecording,
     };
   }
 }

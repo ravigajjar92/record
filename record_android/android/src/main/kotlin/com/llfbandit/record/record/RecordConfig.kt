@@ -19,7 +19,11 @@ class RecordConfig(
     val manageBluetooth: Boolean = true,
     val audioSource: Int = MediaRecorder.AudioSource.DEFAULT,
     val speakerphone: Boolean = false,
-    val audioManagerMode: Int = AudioManager.MODE_NORMAL
+    val audioManagerMode: Int = AudioManager.MODE_NORMAL,
+    val enableBackgroundRecording: Boolean = false,
+    val notificationTitle: String = "Recording audio",
+    val notificationText: String = "Audio recording is active",
+    val notificationIcon: String? = null
 ) {
     val numChannels: Int = 2.coerceAtMost(1.coerceAtLeast(numChannels))
 }

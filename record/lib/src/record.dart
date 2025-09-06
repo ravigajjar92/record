@@ -54,6 +54,12 @@ class AudioRecorder {
   /// [path]: The output path file. Required on all IO platforms.
   /// On `web`: This parameter is ignored.
   ///
+  /// For background recording:
+  /// - **Android**: Enable `enableBackgroundRecording` in `androidConfig` and ensure 
+  ///   FOREGROUND_SERVICE permission is declared in AndroidManifest.xml
+  /// - **iOS**: Enable `enableBackgroundRecording` in `iosConfig` and add 'audio' 
+  ///   to UIBackgroundModes in Info.plist
+  ///
   /// Output path can be retrieves when [stop] method is called.
   Future<void> start(
     RecordConfig config, {
@@ -71,6 +77,12 @@ class AudioRecorder {
   }
 
   /// Same as [start] with output stream instead of a path.
+  ///
+  /// For background recording:
+  /// - **Android**: Enable `enableBackgroundRecording` in `androidConfig` and ensure 
+  ///   FOREGROUND_SERVICE permission is declared in AndroidManifest.xml
+  /// - **iOS**: Enable `enableBackgroundRecording` in `iosConfig` and add 'audio' 
+  ///   to UIBackgroundModes in Info.plist
   ///
   /// When stopping the record, you must rely on stream close event to get
   /// full recorded data.
