@@ -115,7 +115,21 @@ if (await record.hasPermission()) {
    ```xml
    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+   <!-- Required for Android 13+ (API 33+) -->
+   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
    ```
+
+2. **For Android 13+ (API 33)**: Request notification permission at runtime:
+   ```dart
+   import 'package:permission_handler/permission_handler.dart';
+   
+   // Request notification permission before starting background recording
+   if (await Permission.notification.isDenied) {
+     await Permission.notification.request();
+   }
+   ```
+
+3. **For Android 15+ (API 35)**: The system automatically handles foreground service restrictions. If background recording fails to start, the package will return an error with guidance.
 
 ### iOS Background Recording
 

@@ -7,9 +7,11 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 
 /**
  * Foreground service for background audio recording
@@ -25,17 +27,31 @@ class RecordingForegroundService : Service() {
             title: String,
             text: String,
             iconResourceName: String?
-        ) {
+        ): Boolean {
+            // Check notification permission for Android 13+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val notificationManager = NotificationManagerCompat.from(context)
+                if (!notificationManager.areNotificationsEnabled()) {
+                    return false // Notification permission not granted
+                }
+            }
+            
             val intent = Intent(context, RecordingForegroundService::class.java).apply {
                 putExtra("title", title)
                 putExtra("text", text)
                 putExtra("iconResourceName", iconResourceName)
             }
             
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+                return true
+            } catch (e: SecurityException) {
+                // Android 15+ may throw SecurityException if service cannot be started
+                return false
             }
         }
 
@@ -58,7 +74,17 @@ class RecordingForegroundService : Service() {
         val iconResourceName = intent?.getStringExtra("iconResourceName")
 
         val notification = createNotification(title, text, iconResourceName)
-        startForeground(NOTIFICATION_ID, notification)
+        
+        // Use proper service type for Android 15+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // API 34+
+            startForeground(
+                NOTIFICATION_ID, 
+                notification, 
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
 
         return START_STICKY
     }

@@ -176,12 +176,16 @@ internal class RecorderWrapper(
 
     private fun start(config: RecordConfig, result: MethodChannel.Result) {
         if (config.enableBackgroundRecording) {
-            RecordingForegroundService.startService(
+            val serviceStarted = RecordingForegroundService.startService(
                 context,
                 config.notificationTitle,
                 config.notificationText,
                 config.notificationIcon
             )
+            if (!serviceStarted) {
+                result.error("record", "Failed to start background recording. Make sure notification permissions are granted for Android 13+", null)
+                return
+            }
             isBackgroundRecording = true
         }
         
